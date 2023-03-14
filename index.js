@@ -41,7 +41,9 @@ app.get("/api/:date?", function (req, res) {
   }
 
   if (dateIsValid(new Date(rawDate))) {
-    res.json({ test: rawDate });
+    let unix = new Date(rawDate).getTime();
+    let utc = new Date(rawDate).toUTCString();
+    res.json({ unix: unix, utc: utc });
   } else {
     res.json("xd");
   }
