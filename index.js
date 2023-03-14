@@ -24,6 +24,11 @@ app.get("/api/hello", function (req, res) {
 });
 
 app.get("/api/:date?", function (req, res) {
+  if(!req.params.date){
+    let unix = new Date().getTime()
+    let utc = new Date().toUTCString()
+    res.json({ unix: unix, utc: utc });
+  }
   let rawDate = req.params.date;
   function dateIsValid(date) {
     if (
@@ -39,20 +44,23 @@ app.get("/api/:date?", function (req, res) {
   }
   if (new Date(Number(rawDate))) {
     if (dateIsValid(new Date(rawDate))) {
-      let unix = new Date(rawDate).getTime();
-      let utc = new Date(rawDate).toUTCString();
-      res.json({ unix: unix, utc: utc });
+    let unix = new Date(rawDate).getTime();
+    let utc = new Date(rawDate).toUTCString();
+    res.json({ unix: unix, utc: utc });
+  } else {
+    let unix = Number(rawDate)
+    let utc = new Date(Number(rawDate))
+    console.log(utc)
+    if (!dateIsValid(utc)) {
+      res.json({error: "Invalid Date"})
     } else {
-      let unix = Number(rawDate);
-      let utc = new Date(Number(rawDate));
-      if (!dateIsValid(utc)) {
-        res.json({ error: "Invalid Date" });
-      } else {
-        res.json({ unix: unix, utc: utc });
-      }
+      res.json({unix: unix, utc: utc.toUTCString()});
     }
+    
   }
-});
+}
+  }
+  );
 
 // listen for requests :)
 var listener = app.listen(process.env.PORT, function () {
