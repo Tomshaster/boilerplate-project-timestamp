@@ -25,9 +25,7 @@ app.get("/api/hello", function (req, res) {
 
 app.get("/api/:date?", function (req, res) {
   let rawDate = req.params.date;
-  console.log(rawDate);
   function dateIsValid(date) {
-    console.log(date);
     if (
       typeof date === "object" &&
       date !== null &&
@@ -39,13 +37,20 @@ app.get("/api/:date?", function (req, res) {
 
     return false;
   }
-
-  if (dateIsValid(new Date(rawDate))) {
-    let unix = new Date(rawDate).getTime();
-    let utc = new Date(rawDate).toUTCString();
-    res.json({ unix: unix, utc: utc });
-  } else {
-    res.json("xd");
+  if (new Date(Number(rawDate))) {
+    if (dateIsValid(new Date(rawDate))) {
+      let unix = new Date(rawDate).getTime();
+      let utc = new Date(rawDate).toUTCString();
+      res.json({ unix: unix, utc: utc });
+    } else {
+      let unix = Number(rawDate);
+      let utc = new Date(Number(rawDate));
+      if (!dateIsValid(utc)) {
+        res.json({ error: "Invalid Date" });
+      } else {
+        res.json({ unix: unix, utc: utc });
+      }
+    }
   }
 });
 
